@@ -603,6 +603,96 @@
       gap: 10px;
     }
 
+    .dictionary-tools {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .dictionary-tools input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 11px 12px;
+      color: var(--ink);
+      background: var(--input-bg);
+      outline: none;
+    }
+
+    .dictionary-tools input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(47, 111, 159, 0.13);
+    }
+
+    .dictionary-layout {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.45fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .dictionary-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-content: start;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--input-bg);
+    }
+
+    .dictionary-word {
+      border: 1px solid var(--chip-line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: var(--control);
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .dictionary-word:hover,
+    .dictionary-word.active {
+      border-color: var(--blue);
+      color: white;
+      background: var(--blue);
+    }
+
+    .dictionary-result {
+      display: grid;
+      gap: 12px;
+      min-height: 220px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--input-bg);
+    }
+
+    .dictionary-result h3 {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .dictionary-result p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .dictionary-result ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .dictionary-source {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .dictionary-source a {
+      color: var(--blue);
+      font-weight: 800;
+    }
+
     .word-card {
       display: grid;
       gap: 8px;
@@ -716,7 +806,7 @@
 
       .nav {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         width: 100%;
       }
 
@@ -741,7 +831,8 @@
       }
 
       .hero-band,
-      .grid {
+      .grid,
+      .dictionary-layout {
         grid-template-columns: 1fr;
       }
     }
@@ -817,6 +908,10 @@
       .btn {
         width: 100%;
       }
+
+      .dictionary-tools {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -832,6 +927,7 @@
         <button type="button" data-tab="writing">Writing</button>
         <button type="button" data-tab="voice">Voice</button>
         <button type="button" data-tab="vocab">Words</button>
+        <button type="button" data-tab="dictionary">Dictionary</button>
         <button type="button" data-tab="progress">Progress</button>
       </nav>
       <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Dark mode</button>
@@ -942,6 +1038,25 @@
           </article>
         </section>
 
+        <section class="tab-panel" data-panel="dictionary">
+          <article class="panel section" id="dictionary">
+            <h2>German Dictionary</h2>
+            <div class="dictionary-tools">
+              <input id="dictionarySearch" type="search" placeholder="Search a German word..." autocomplete="off">
+              <button class="btn" id="dictionaryLookupBtn" type="button">Look up</button>
+            </div>
+            <div class="dictionary-layout">
+              <div class="dictionary-list" id="dictionaryList" aria-label="German words in this website"></div>
+              <div class="dictionary-result" id="dictionaryResult">
+                <p>Select a German word to see definitions, examples, pronunciation, and translations.</p>
+              </div>
+            </div>
+            <p class="dictionary-source">
+              Dictionary data from <a href="https://freedictionaryapi.com/" target="_blank" rel="noopener">FreeDictionaryAPI.com</a> and Wiktionary. Local vocabulary is shown when online lookup is unavailable.
+            </p>
+          </article>
+        </section>
+
         <section class="tab-panel" data-panel="progress">
           <article class="panel section">
             <h2>Improvement Over Time</h2>
@@ -1028,6 +1143,8 @@
       }
     ];
 
+    const dictionaryWords = buildDictionaryWords();
+    const localDictionary = buildLocalDictionary();
     const stateKey = "deutschDailyProgress";
     const themeKey = "deutschDailyTheme";
     const todayKey = new Date().toISOString().slice(0, 10);
@@ -1063,6 +1180,10 @@
       pronunciationRing: document.querySelector("#pronunciationRing"),
       savedCount: document.querySelector("#savedCount"),
       vocabList: document.querySelector("#vocabList"),
+      dictionarySearch: document.querySelector("#dictionarySearch"),
+      dictionaryLookupBtn: document.querySelector("#dictionaryLookupBtn"),
+      dictionaryList: document.querySelector("#dictionaryList"),
+      dictionaryResult: document.querySelector("#dictionaryResult"),
       timeline: document.querySelector("#timeline"),
       savedWords: document.querySelector("#savedWords"),
       coachMessage: document.querySelector("#coachMessage"),
@@ -1165,6 +1286,7 @@
       els.dictationFeedback.className = "feedback";
       els.dictationFeedback.textContent = "Your listening and spelling feedback will appear here.";
       renderVocabulary(sentence);
+      renderDictionaryList();
       renderProgress();
     }
 
@@ -1201,6 +1323,227 @@
 
         els.vocabList.appendChild(card);
       });
+    }
+
+    function buildDictionaryWords() {
+      const words = new Map();
+
+      sentences.forEach((sentence) => {
+        sentence.words.forEach((entry) => {
+          addDictionaryWord(words, entry.word);
+        });
+
+        sentence.german
+          .replace(/[.,!?;:]/g, "")
+          .split(/\s+/)
+          .filter(Boolean)
+          .forEach((word) => addDictionaryWord(words, word));
+      });
+
+      return [...words.values()].sort((a, b) => a.localeCompare(b, "de"));
+    }
+
+    function buildLocalDictionary() {
+      const entries = new Map();
+
+      sentences.forEach((sentence) => {
+        sentence.words.forEach((entry) => {
+          const key = normalizeDictionaryKey(entry.word);
+          entries.set(key, {
+            word: entry.word,
+            definition: entry.meaning,
+            example: entry.example,
+            sourceSentence: sentence.german
+          });
+        });
+
+        sentence.german
+          .replace(/[.,!?;:]/g, "")
+          .split(/\s+/)
+          .filter(Boolean)
+          .forEach((word) => {
+            const key = normalizeDictionaryKey(word);
+            if (!entries.has(key)) {
+              entries.set(key, {
+                word,
+                definition: "German word used in the daily sentence set.",
+                example: sentence.german,
+                sourceSentence: sentence.english
+              });
+            }
+          });
+      });
+
+      return entries;
+    }
+
+    function addDictionaryWord(words, word) {
+      const cleanWord = word.trim();
+      if (!cleanWord) return;
+      words.set(normalizeDictionaryKey(cleanWord), cleanWord);
+    }
+
+    function normalizeDictionaryKey(word) {
+      return word.toLowerCase().replace(/[.,!?;:]/g, "").replace(/\s+/g, " ").trim();
+    }
+
+    function renderDictionaryList(filter = "") {
+      const search = normalizeDictionaryKey(filter);
+      const visibleWords = dictionaryWords.filter((word) => normalizeDictionaryKey(word).includes(search));
+      els.dictionaryList.innerHTML = "";
+
+      visibleWords.forEach((word) => {
+        const button = document.createElement("button");
+        button.className = "dictionary-word";
+        button.type = "button";
+        button.textContent = word;
+        button.addEventListener("click", () => lookupDictionaryWord(word));
+        els.dictionaryList.appendChild(button);
+      });
+
+      if (!visibleWords.length) {
+        els.dictionaryList.innerHTML = `<span class="empty">No matching German words in this website yet.</span>`;
+      }
+    }
+
+    async function lookupDictionaryWord(word) {
+      const cleanWord = word.trim();
+      if (!cleanWord) return;
+
+      els.dictionarySearch.value = cleanWord;
+      setActiveDictionaryWord(cleanWord);
+      els.dictionaryResult.innerHTML = `<p>Looking up <b>${escapeHTML(cleanWord)}</b>...</p>`;
+
+      const encodedWord = encodeURIComponent(cleanWord);
+      const sources = [
+        {
+          url: `https://freedictionaryapi.com/api/v1/entries/de/${encodedWord}?translations=true`,
+          parser: parseFreeDictionaryApi
+        },
+        {
+          url: `https://api.dictionaryapi.dev/api/v2/entries/de/${encodedWord}`,
+          parser: parseDictionaryApiDev
+        }
+      ];
+
+      for (const source of sources) {
+        try {
+          const response = await fetch(source.url);
+          if (!response.ok) continue;
+          const data = await response.json();
+          const html = source.parser(data, cleanWord);
+          if (html) {
+            els.dictionaryResult.innerHTML = html;
+            return;
+          }
+        } catch {
+          // Keep trying the next source, then fall back to local data.
+        }
+      }
+
+      renderLocalDictionaryResult(cleanWord);
+    }
+
+    function parseFreeDictionaryApi(data, word) {
+      if (!data || !Array.isArray(data.entries) || !data.entries.length) return "";
+
+      const pronunciations = data.entries
+        .flatMap((entry) => entry.pronunciations || [])
+        .map((item) => item.text)
+        .filter(Boolean);
+      const definitions = data.entries
+        .flatMap((entry) => (entry.senses || []).map((sense) => ({
+          partOfSpeech: entry.partOfSpeech,
+          definition: sense.definition,
+          example: sense.examples?.[0],
+          translations: (sense.translations || []).filter((item) => item.language?.code === "en").map((item) => item.word)
+        })))
+        .filter((item) => item.definition)
+        .slice(0, 5);
+      const sourceUrl = data.source?.url;
+
+      return renderDictionaryResultHTML(word, definitions, pronunciations, sourceUrl, "FreeDictionaryAPI.com");
+    }
+
+    function parseDictionaryApiDev(data, word) {
+      if (!Array.isArray(data) || !data.length) return "";
+
+      const pronunciations = data
+        .flatMap((entry) => entry.phonetics || [])
+        .map((item) => item.text)
+        .filter(Boolean);
+      const definitions = data
+        .flatMap((entry) => entry.meanings || [])
+        .flatMap((meaning) => (meaning.definitions || []).map((item) => ({
+          partOfSpeech: meaning.partOfSpeech,
+          definition: item.definition,
+          example: item.example,
+          translations: []
+        })))
+        .filter((item) => item.definition)
+        .slice(0, 5);
+
+      return renderDictionaryResultHTML(word, definitions, pronunciations, "", "DictionaryAPI.dev");
+    }
+
+    function renderDictionaryResultHTML(word, definitions, pronunciations, sourceUrl, sourceName) {
+      if (!definitions.length) return "";
+
+      const pronunciationHTML = pronunciations.length
+        ? `<p><b>Pronunciation:</b> ${escapeHTML([...new Set(pronunciations)].slice(0, 3).join(", "))}</p>`
+        : "";
+      const definitionHTML = definitions.map((item) => `
+        <li>
+          ${item.partOfSpeech ? `<b>${escapeHTML(item.partOfSpeech)}:</b> ` : ""}${escapeHTML(item.definition)}
+          ${item.translations?.length ? `<br><span>English: ${escapeHTML([...new Set(item.translations)].slice(0, 4).join(", "))}</span>` : ""}
+          ${item.example ? `<br><span>Example: ${escapeHTML(item.example)}</span>` : ""}
+        </li>
+      `).join("");
+      const sourceHTML = sourceUrl
+        ? `<a href="${escapeHTML(sourceUrl)}" target="_blank" rel="noopener">${escapeHTML(sourceName)}</a>`
+        : escapeHTML(sourceName);
+
+      return `
+        <h3>${escapeHTML(word)}</h3>
+        ${pronunciationHTML}
+        <ul>${definitionHTML}</ul>
+        <p class="dictionary-source">Source: ${sourceHTML}</p>
+      `;
+    }
+
+    function renderLocalDictionaryResult(word) {
+      const entry = localDictionary.get(normalizeDictionaryKey(word));
+      if (!entry) {
+        els.dictionaryResult.innerHTML = `
+          <h3>${escapeHTML(word)}</h3>
+          <p>No online definition was found, and this word is not in the local lesson list.</p>
+        `;
+        return;
+      }
+
+      els.dictionaryResult.innerHTML = `
+        <h3>${escapeHTML(entry.word)}</h3>
+        <p><b>Meaning:</b> ${escapeHTML(entry.definition)}</p>
+        <p><b>Example:</b> ${escapeHTML(entry.example)}</p>
+        <p><b>From:</b> ${escapeHTML(entry.sourceSentence)}</p>
+        <p class="dictionary-source">Local lesson fallback. Online dictionary lookup was unavailable or had no result.</p>
+      `;
+    }
+
+    function setActiveDictionaryWord(word) {
+      const key = normalizeDictionaryKey(word);
+      els.dictionaryList.querySelectorAll(".dictionary-word").forEach((button) => {
+        button.classList.toggle("active", normalizeDictionaryKey(button.textContent) === key);
+      });
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     function renderProgress() {
@@ -1390,6 +1733,11 @@
     els.playSlowBtn.addEventListener("click", () => speak(0.68));
     els.dictationPlayBtn.addEventListener("click", () => speak(0.78));
     els.checkDictationBtn.addEventListener("click", checkDictation);
+    els.dictionaryLookupBtn.addEventListener("click", () => lookupDictionaryWord(els.dictionarySearch.value));
+    els.dictionarySearch.addEventListener("input", () => renderDictionaryList(els.dictionarySearch.value));
+    els.dictionarySearch.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") lookupDictionaryWord(els.dictionarySearch.value);
+    });
     els.checkWritingBtn.addEventListener("click", checkWriting);
     els.fillHintBtn.addEventListener("click", () => {
       const words = sentences[currentIndex].german.split(" ");
