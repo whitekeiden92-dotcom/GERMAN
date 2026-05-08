@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deutsch Daily</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d252c;
+      --muted: #65717d;
+      --line: #dfe6eb;
+      --paper: #fbfcfd;
+      --panel: #ffffff;
+      --sidebar: #123247;
+      --topbar: rgba(251, 252, 253, 0.88);
+      --control: #ffffff;
+      --control-hover: #f5f8fa;
+      --soft: #f5f8fa;
+      --soft-strong: #e8eef2;
+      --input-bg: #fbfdfe;
+      --info-bg: #eef6f7;
+      --info-line: #d8e9ec;
+      --success-bg: #edf8f2;
+      --success-line: #cde9da;
+      --success-ink: #1f6848;
+      --warning-bg: #fff8e8;
+      --warning-line: #f0dfab;
+      --warning-ink: #755d17;
+      --danger-bg: #ffe8eb;
+      --chip-line: #cbdce5;
+      --blue: #2f6f9f;
+      --blue-dark: #225171;
+      --green: #28845d;
+      --yellow: #f1c84b;
+      --red: #c64b55;
+      --shadow: 0 18px 45px rgba(38, 55, 71, 0.12);
+      --radius: 8px;
+    }
+
+    body.dark {
+      color-scheme: dark;
+      --ink: #edf3f7;
+      --muted: #a9b6c2;
+      --line: #2d4354;
+      --paper: #0c141b;
+      --panel: #12202b;
+      --sidebar: #081a26;
+      --topbar: rgba(12, 20, 27, 0.9);
+      --control: #172836;
+      --control-hover: #203545;
+      --soft: #172633;
+      --soft-strong: #243745;
+      --input-bg: #0f1b25;
+      --info-bg: #132b35;
+      --info-line: #254958;
+      --success-bg: #123326;
+      --success-line: #255d44;
+      --success-ink: #9ce3bd;
+      --warning-bg: #312918;
+      --warning-line: #685329;
+      --warning-ink: #f3d27b;
+      --danger-bg: #3a1f27;
+      --chip-line: #31596a;
+      --blue: #66a9d8;
+      --blue-dark: #8dc3e4;
+      --green: #63c692;
+      --yellow: #f1c84b;
+      --red: #f07b86;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      width: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr;
+      min-width: 0;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      min-height: 82px;
+      padding: 16px clamp(18px, 4vw, 44px);
+      background: var(--sidebar);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-width: 0;
+      z-index: 6;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.22rem;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #f4d35e, #2f6f9f);
+      color: #102331;
+      font-weight: 900;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .nav button {
+      border: 0;
+      color: rgba(255, 255, 255, 0.78);
+      background: transparent;
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 650;
+      min-width: 0;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background: rgba(255, 255, 255, 0.11);
+      color: white;
+    }
+
+    .theme-toggle {
+      min-height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .coach-note {
+      width: min(330px, 32vw);
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .coach-note strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .coach-note p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .topbar {
+      min-height: 86px;
+      padding: 20px clamp(18px, 4vw, 44px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--topbar);
+      backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 4;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 3vw, 2.1rem);
+      line-height: 1.1;
+      letter-spacing: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .topbar > div:first-child {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .topbar p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      max-width: 720px;
+      overflow-wrap: anywhere;
+    }
+
+    .date-pill {
+      flex: 0 0 auto;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--control);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .content {
+      padding: 28px clamp(18px, 4vw, 44px) 44px;
+      display: grid;
+      gap: 22px;
+      min-width: 0;
+    }
+
+    .tab-panel {
+      display: none;
+      gap: 22px;
+      min-width: 0;
+    }
+
+    .tab-panel.active {
+      display: grid;
+    }
+
+    .hero-band {
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      align-items: stretch;
+    }
+
+    .panel {
+      min-width: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .sentence-card {
+      padding: clamp(20px, 4vw, 34px);
+      display: grid;
+      gap: 18px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--blue);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--yellow);
+    }
+
+    .german-sentence {
+      margin: 0;
+      font-size: clamp(2rem, 5.2vw, 4rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .translation {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      overflow-wrap: anywhere;
+    }
+
+    .guide {
+      display: grid;
+      gap: 8px;
+      padding: 15px;
+      border-radius: var(--radius);
+      background: var(--info-bg);
+      border: 1px solid var(--info-line);
+    }
+
+    .guide span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .guide strong {
+      font-size: 1.05rem;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      min-height: 44px;
+      border: 0;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: white;
+      background: var(--blue);
+      font-weight: 800;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+
+    .btn:hover {
+      background: var(--blue-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
+      background: var(--control);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .btn.secondary:hover {
+      background: var(--control-hover);
+      border-color: var(--line);
+    }
+
+    .btn.recording {
+      background: var(--red);
+    }
+
+    .stats-card {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .stats-card h2,
+    .section h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      letter-spacing: 0;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      padding: 14px;
+      border-radius: var(--radius);
+      background: var(--soft);
+      border: 1px solid var(--line);
+    }
+
+    .stat b {
+      display: block;
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .progress-ring {
+      display: grid;
+      place-items: center;
+      min-height: 170px;
+      border-radius: var(--radius);
+      background: conic-gradient(var(--green) var(--pronunciation-angle), var(--soft-strong) 0);
+      position: relative;
+    }
+
+    .progress-ring::after {
+      content: "";
+      position: absolute;
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      background: var(--panel);
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .ring-label {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .ring-label b {
+      display: block;
+      font-size: 1.8rem;
+    }
+
+    .ring-label span {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(310px, 0.72fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .section {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      color: var(--ink);
+      background: var(--input-bg);
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(47, 111, 159, 0.13);
+    }
+
+    .feedback {
+      min-height: 48px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--soft);
+      padding: 12px;
+      color: var(--muted);
+    }
+
+    .feedback.good {
+      background: var(--success-bg);
+      border-color: var(--success-line);
+      color: var(--success-ink);
+    }
+
+    .feedback.needs-work {
+      background: var(--warning-bg);
+      border-color: var(--warning-line);
+      color: var(--warning-ink);
+    }
+
+    .diff {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .token {
+      padding: 4px 7px;
+      border-radius: 6px;
+      background: var(--soft-strong);
+      font-weight: 750;
+    }
+
+    .token.wrong {
+      background: var(--danger-bg);
+      color: var(--red);
+      text-decoration: line-through;
+    }
+
+    .token.missing {
+      background: var(--success-bg);
+      color: var(--green);
+    }
+
+    .assistant-box {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 15px;
+      border-radius: var(--radius);
+      background: var(--soft);
+      border: 1px solid var(--line);
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--sidebar);
+      color: white;
+      font-weight: 900;
+      box-shadow: inset 0 -8px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .assistant-box p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .assistant-box strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .voice-result {
+      padding: 12px;
+      border-radius: var(--radius);
+      background: var(--control);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .dictation-box {
+      display: grid;
+      gap: 12px;
+      padding: 15px;
+      border-radius: var(--radius);
+      background: var(--input-bg);
+      border: 1px solid var(--line);
+    }
+
+    .dictation-box h3 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .dictation-box p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .vocab-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .word-card {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--input-bg);
+    }
+
+    .word-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .word-head strong {
+      font-size: 1.05rem;
+    }
+
+    .word-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .save-word {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--control);
+      min-height: 34px;
+      padding: 6px 9px;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .save-word.saved {
+      color: var(--green);
+      background: var(--success-bg);
+      border-color: var(--success-line);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr) 44px;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: var(--soft-strong);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: var(--score-width);
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      border-radius: inherit;
+    }
+
+    .saved-words {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 40px;
+      align-items: center;
+    }
+
+    .chip {
+      border: 1px solid var(--chip-line);
+      background: var(--info-bg);
+      color: var(--blue-dark);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    @media (max-width: 920px) {
+      .app {
+        grid-template-columns: 1fr;
+        overflow-x: hidden;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        padding: 16px;
+        gap: 14px;
+        overflow: hidden;
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .nav {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        width: 100%;
+      }
+
+      .nav button {
+        justify-content: center;
+        padding: 9px 7px;
+        font-size: 0.88rem;
+      }
+
+      .theme-toggle {
+        width: 100%;
+      }
+
+      .coach-note {
+        width: 100%;
+      }
+
+      .topbar {
+        position: static;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero-band,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .sidebar,
+      .topbar,
+      .content {
+        padding-left: 16px;
+        padding-right: 16px;
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+
+      .nav {
+        grid-template-columns: 1fr;
+        width: 100% !important;
+        max-width: 320px !important;
+      }
+
+      .nav button {
+        width: 100%;
+      }
+
+      .theme-toggle {
+        width: 100% !important;
+        max-width: 320px !important;
+      }
+
+      .coach-note,
+      .topbar > div:first-child,
+      .tab-panel,
+      .panel {
+        width: 100% !important;
+        max-width: 320px !important;
+      }
+
+      .topbar h1 {
+        font-size: 1.18rem;
+      }
+
+      .topbar p,
+      .translation {
+        font-size: 0.98rem;
+      }
+
+      .content {
+        padding-top: 18px;
+      }
+
+      .german-sentence {
+        font-size: 1.45rem;
+      }
+
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .assistant-box {
+        grid-template-columns: 44px minmax(0, 1fr);
+      }
+
+      .avatar {
+        width: 44px;
+        height: 44px;
+      }
+
+      .timeline-row {
+        grid-template-columns: 70px minmax(0, 1fr) 38px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Learning navigation">
+      <div class="brand">
+        <div class="brand-mark">D</div>
+        <span>Deutsch Daily</span>
+      </div>
+      <nav class="nav" aria-label="Learning tabs">
+        <button class="active" type="button" data-tab="today">Today</button>
+        <button type="button" data-tab="writing">Writing</button>
+        <button type="button" data-tab="voice">Voice</button>
+        <button type="button" data-tab="vocab">Words</button>
+        <button type="button" data-tab="progress">Progress</button>
+      </nav>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Dark mode</button>
+      <div class="coach-note">
+        <strong id="coachTitle">Daily coach</strong>
+        <p id="coachMessage">Finish one short session today to keep your German streak alive.</p>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <h1>Practice German with one focused sentence.</h1>
+          <p>Write it, hear it, repeat it, and build a small vocabulary stack from real daily examples.</p>
+        </div>
+        <div class="date-pill" id="todayLabel"></div>
+      </header>
+
+      <div class="content">
+        <section class="tab-panel hero-band active" id="sentence" data-panel="today">
+          <article class="panel sentence-card">
+            <div class="eyebrow"><span class="dot"></span> Daily German Sentence</div>
+            <h2 class="german-sentence" id="germanSentence"></h2>
+            <p class="translation" id="englishTranslation"></p>
+            <div class="guide">
+              <span>Pronunciation guide</span>
+              <strong id="pronunciationGuide"></strong>
+            </div>
+            <div class="actions">
+              <button class="btn" id="speakBtn" type="button">Play pronunciation</button>
+              <button class="btn secondary" id="newSentenceBtn" type="button">Show another example</button>
+            </div>
+          </article>
+
+          <aside class="panel stats-card" aria-label="Practice progress">
+            <h2>Progress</h2>
+            <div class="progress-ring" id="pronunciationRing">
+              <div class="ring-label">
+                <b id="pronunciationScore">0%</b>
+                <span>Speaking score</span>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat">
+                <b id="streakCount">0</b>
+                <span>Day streak</span>
+              </div>
+              <div class="stat">
+                <b id="completedCount">0</b>
+                <span>Sentences done</span>
+              </div>
+              <div class="stat">
+                <b id="writingScore">0%</b>
+                <span>Writing score</span>
+              </div>
+              <div class="stat">
+                <b id="savedCount">0</b>
+                <span>Saved words</span>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="tab-panel" data-panel="writing">
+          <article class="panel section" id="writing">
+            <h2>Writing Practice</h2>
+            <textarea id="writingInput" spellcheck="false" placeholder="Type the German sentence here..."></textarea>
+            <div class="actions">
+              <button class="btn" id="checkWritingBtn" type="button">Check writing</button>
+              <button class="btn secondary" id="fillHintBtn" type="button">Use hint</button>
+            </div>
+            <div class="feedback" id="writingFeedback">Your spelling and word order feedback will appear here.</div>
+          </article>
+        </section>
+
+        <section class="tab-panel" data-panel="voice">
+          <article class="panel section" id="voice">
+            <h2>AI Pronunciation Assistant</h2>
+            <div class="assistant-box">
+              <div class="avatar">AI</div>
+              <div>
+                <strong>Pronunciation coach</strong>
+                <p id="voiceCoachText">Listen first, then record yourself. I will compare your spoken sentence with today’s German sentence.</p>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" id="recordBtn" type="button">Start speaking</button>
+              <button class="btn secondary" id="playSlowBtn" type="button">Play slowly</button>
+            </div>
+            <div class="voice-result" id="voiceResult">Microphone feedback will appear here after recording.</div>
+            <div class="dictation-box">
+              <h3>Listen and write</h3>
+              <p>Let the AI read the sentence, then type exactly what you heard in German.</p>
+              <div class="actions">
+                <button class="btn" id="dictationPlayBtn" type="button">Read sentence</button>
+                <button class="btn secondary" id="checkDictationBtn" type="button">Check what I wrote</button>
+              </div>
+              <textarea id="dictationInput" spellcheck="false" placeholder="Write the German sentence you heard..."></textarea>
+              <div class="feedback" id="dictationFeedback">Your listening and spelling feedback will appear here.</div>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-panel" data-panel="vocab">
+          <article class="panel section" id="vocab">
+            <h2>Vocabulary Support</h2>
+            <div class="vocab-list" id="vocabList"></div>
+          </article>
+        </section>
+
+        <section class="tab-panel" data-panel="progress">
+          <article class="panel section">
+            <h2>Improvement Over Time</h2>
+            <div class="timeline" id="timeline"></div>
+            <h2>Saved Words</h2>
+            <div class="saved-words" id="savedWords"></div>
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const sentences = [
+      {
+        german: "Ich freue mich auf den Deutschunterricht.",
+        english: "I am looking forward to the German lesson.",
+        pronunciation: "ikh FROY-uh mikh owf dayn DOYCH-oon-ter-rikht",
+        words: [
+          { word: "freue mich", meaning: "am looking forward to", example: "Ich freue mich auf das Wochenende." },
+          { word: "Deutschunterricht", meaning: "German lesson", example: "Der Deutschunterricht beginnt um neun Uhr." },
+          { word: "auf", meaning: "to / for, used with anticipation", example: "Wir warten auf den Bus." }
+        ]
+      },
+      {
+        german: "Heute schreibe ich drei neue Wörter in mein Heft.",
+        english: "Today I am writing three new words in my notebook.",
+        pronunciation: "HOY-tuh SHRY-buh ikh dry NOY-uh VUR-ter in mine heft",
+        words: [
+          { word: "Heute", meaning: "today", example: "Heute lerne ich Deutsch." },
+          { word: "Wörter", meaning: "words", example: "Diese Wörter sind wichtig." },
+          { word: "Heft", meaning: "notebook", example: "Mein Heft liegt auf dem Tisch." }
+        ]
+      },
+      {
+        german: "Kannst du den Satz bitte langsam wiederholen?",
+        english: "Can you please repeat the sentence slowly?",
+        pronunciation: "kanst doo dayn zahts BIT-tuh LAHNG-zahm VEE-der-hoh-len",
+        words: [
+          { word: "Satz", meaning: "sentence", example: "Der Satz ist kurz und klar." },
+          { word: "langsam", meaning: "slowly", example: "Sprich bitte langsam." },
+          { word: "wiederholen", meaning: "to repeat", example: "Kannst du das Wort wiederholen?" }
+        ]
+      },
+      {
+        german: "Ich möchte jeden Tag ein bisschen besser sprechen.",
+        english: "I would like to speak a little better every day.",
+        pronunciation: "ikh MURKH-tuh YAY-den tahk ine BIS-khen BES-ser SHPREKH-en",
+        words: [
+          { word: "möchte", meaning: "would like", example: "Ich möchte Wasser trinken." },
+          { word: "jeden Tag", meaning: "every day", example: "Sie übt jeden Tag." },
+          { word: "bisschen", meaning: "a little bit", example: "Ich verstehe ein bisschen Deutsch." }
+        ]
+      },
+      {
+        german: "Meine Aussprache wird mit Übung klarer.",
+        english: "My pronunciation becomes clearer with practice.",
+        pronunciation: "MY-nuh OWS-shprah-khuh virt mit UE-boong KLAH-rer",
+        words: [
+          { word: "Aussprache", meaning: "pronunciation", example: "Deine Aussprache ist gut." },
+          { word: "Übung", meaning: "practice", example: "Mit Übung wird es leichter." },
+          { word: "klarer", meaning: "clearer", example: "Der Satz ist jetzt klarer." }
+        ]
+      },
+      {
+        german: "Ich höre genau zu und spreche dann nach.",
+        english: "I listen carefully and then repeat after it.",
+        pronunciation: "ikh HUR-uh geh-NOW tsoo unt SHPREKH-uh dahn nahkh",
+        words: [
+          { word: "höre zu", meaning: "listen", example: "Ich höre dem Lehrer zu." },
+          { word: "genau", meaning: "carefully / exactly", example: "Lies den Satz genau." },
+          { word: "nachsprechen", meaning: "to repeat after", example: "Bitte sprich das Wort nach." }
+        ]
+      },
+      {
+        german: "Dieser kurze Satz hilft mir beim Lernen.",
+        english: "This short sentence helps me with learning.",
+        pronunciation: "DEE-zer KOOR-tsuh zahts hilft meer bym LAIR-nen",
+        words: [
+          { word: "dieser", meaning: "this", example: "Dieser Satz ist einfach." },
+          { word: "kurze", meaning: "short", example: "Ich lese eine kurze Nachricht." },
+          { word: "beim Lernen", meaning: "while learning / with learning", example: "Musik hilft mir beim Lernen." }
+        ]
+      }
+    ];
+
+    const stateKey = "deutschDailyProgress";
+    const themeKey = "deutschDailyTheme";
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const state = loadState();
+    let currentIndex = getDailyIndex();
+    let recognition = null;
+
+    const els = {
+      todayLabel: document.querySelector("#todayLabel"),
+      germanSentence: document.querySelector("#germanSentence"),
+      englishTranslation: document.querySelector("#englishTranslation"),
+      pronunciationGuide: document.querySelector("#pronunciationGuide"),
+      speakBtn: document.querySelector("#speakBtn"),
+      playSlowBtn: document.querySelector("#playSlowBtn"),
+      newSentenceBtn: document.querySelector("#newSentenceBtn"),
+      writingInput: document.querySelector("#writingInput"),
+      checkWritingBtn: document.querySelector("#checkWritingBtn"),
+      fillHintBtn: document.querySelector("#fillHintBtn"),
+      writingFeedback: document.querySelector("#writingFeedback"),
+      recordBtn: document.querySelector("#recordBtn"),
+      voiceResult: document.querySelector("#voiceResult"),
+      voiceCoachText: document.querySelector("#voiceCoachText"),
+      dictationPlayBtn: document.querySelector("#dictationPlayBtn"),
+      checkDictationBtn: document.querySelector("#checkDictationBtn"),
+      dictationInput: document.querySelector("#dictationInput"),
+      dictationFeedback: document.querySelector("#dictationFeedback"),
+      streakCount: document.querySelector("#streakCount"),
+      completedCount: document.querySelector("#completedCount"),
+      writingScore: document.querySelector("#writingScore"),
+      pronunciationScore: document.querySelector("#pronunciationScore"),
+      pronunciationRing: document.querySelector("#pronunciationRing"),
+      savedCount: document.querySelector("#savedCount"),
+      vocabList: document.querySelector("#vocabList"),
+      timeline: document.querySelector("#timeline"),
+      savedWords: document.querySelector("#savedWords"),
+      coachMessage: document.querySelector("#coachMessage"),
+      themeToggle: document.querySelector("#themeToggle"),
+      tabs: document.querySelectorAll("[data-tab]"),
+      panels: document.querySelectorAll("[data-panel]")
+    };
+
+    function loadState() {
+      const fallback = {
+        streak: 0,
+        completed: 0,
+        lastPracticeDate: "",
+        writingScores: [],
+        speakingScores: [],
+        savedWords: []
+      };
+
+      try {
+        return { ...fallback, ...JSON.parse(localStorage.getItem(stateKey)) };
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(stateKey, JSON.stringify(state));
+    }
+
+    function getPreferredTheme() {
+      const savedTheme = localStorage.getItem(themeKey);
+      if (savedTheme === "dark" || savedTheme === "light") return savedTheme;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+
+    function setTheme(theme) {
+      const isDark = theme === "dark";
+      document.body.classList.toggle("dark", isDark);
+      els.themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
+      els.themeToggle.setAttribute("aria-pressed", String(isDark));
+      localStorage.setItem(themeKey, theme);
+    }
+
+    function getDailyIndex() {
+      const dayNumber = Math.floor(Date.now() / 86400000);
+      return dayNumber % sentences.length;
+    }
+
+    function normalize(text) {
+      return text
+        .toLowerCase()
+        .replace(/[.,!?;:]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function similarity(a, b) {
+      const source = normalize(a);
+      const target = normalize(b);
+      if (!source && !target) return 100;
+      const distance = levenshtein(source, target);
+      const longest = Math.max(source.length, target.length, 1);
+      return Math.max(0, Math.round((1 - distance / longest) * 100));
+    }
+
+    function levenshtein(a, b) {
+      const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i]);
+      for (let j = 0; j <= a.length; j += 1) matrix[0][j] = j;
+
+      for (let i = 1; i <= b.length; i += 1) {
+        for (let j = 1; j <= a.length; j += 1) {
+          const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + cost
+          );
+        }
+      }
+
+      return matrix[b.length][a.length];
+    }
+
+    function render() {
+      const sentence = sentences[currentIndex];
+      els.todayLabel.textContent = new Intl.DateTimeFormat("en", {
+        weekday: "short",
+        month: "short",
+        day: "numeric"
+      }).format(new Date());
+
+      els.germanSentence.textContent = sentence.german;
+      els.englishTranslation.textContent = sentence.english;
+      els.pronunciationGuide.textContent = sentence.pronunciation;
+      els.writingInput.value = "";
+      els.writingFeedback.className = "feedback";
+      els.writingFeedback.textContent = "Your spelling and word order feedback will appear here.";
+      els.voiceResult.textContent = "Microphone feedback will appear here after recording.";
+      els.dictationInput.value = "";
+      els.dictationFeedback.className = "feedback";
+      els.dictationFeedback.textContent = "Your listening and spelling feedback will appear here.";
+      renderVocabulary(sentence);
+      renderProgress();
+    }
+
+    function setActiveTab(tabName) {
+      els.tabs.forEach((tab) => {
+        const isActive = tab.dataset.tab === tabName;
+        tab.classList.toggle("active", isActive);
+        tab.setAttribute("aria-selected", String(isActive));
+      });
+
+      els.panels.forEach((panel) => {
+        panel.classList.toggle("active", panel.dataset.panel === tabName);
+      });
+    }
+
+    function renderVocabulary(sentence) {
+      els.vocabList.innerHTML = "";
+      sentence.words.forEach((entry) => {
+        const card = document.createElement("div");
+        const isSaved = state.savedWords.some((item) => item.word === entry.word);
+        card.className = "word-card";
+        card.innerHTML = `
+          <div class="word-head">
+            <strong>${entry.word}</strong>
+            <button class="save-word ${isSaved ? "saved" : ""}" type="button">${isSaved ? "Saved" : "Save"}</button>
+          </div>
+          <p><b>Meaning:</b> ${entry.meaning}</p>
+          <p><b>Example:</b> ${entry.example}</p>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          toggleSavedWord(entry);
+        });
+
+        els.vocabList.appendChild(card);
+      });
+    }
+
+    function renderProgress() {
+      const latestWriting = state.writingScores.at(-1)?.score || 0;
+      const latestSpeaking = state.speakingScores.at(-1)?.score || 0;
+      els.streakCount.textContent = state.streak;
+      els.completedCount.textContent = state.completed;
+      els.writingScore.textContent = `${latestWriting}%`;
+      els.pronunciationScore.textContent = `${latestSpeaking}%`;
+      els.pronunciationRing.style.setProperty("--pronunciation-angle", `${latestSpeaking * 3.6}deg`);
+      els.savedCount.textContent = state.savedWords.length;
+      els.coachMessage.textContent = getCoachMessage(latestWriting, latestSpeaking);
+
+      els.timeline.innerHTML = "";
+      const recent = state.speakingScores.slice(-5);
+      if (!recent.length) {
+        els.timeline.innerHTML = `<div class="empty">Record your pronunciation to start a visible improvement history.</div>`;
+      } else {
+        recent.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "timeline-row";
+          row.innerHTML = `
+            <span>${item.date.slice(5)}</span>
+            <div class="bar" style="--score-width: ${item.score}%"><span></span></div>
+            <span>${item.score}%</span>
+          `;
+          els.timeline.appendChild(row);
+        });
+      }
+
+      els.savedWords.innerHTML = "";
+      if (!state.savedWords.length) {
+        els.savedWords.innerHTML = `<span class="empty">Saved vocabulary will appear here.</span>`;
+      } else {
+        state.savedWords.forEach((entry) => {
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          chip.textContent = entry.word;
+          els.savedWords.appendChild(chip);
+        });
+      }
+    }
+
+    function getCoachMessage(writing, speaking) {
+      if (writing >= 95 && speaking >= 85) return "Strong session. Add one saved word and come back tomorrow.";
+      if (writing >= 95) return "Your writing is accurate. Spend the next minute on pronunciation rhythm.";
+      if (speaking >= 80) return "Your speaking is improving. Now tighten spelling and capitalization.";
+      return "Listen once, write once, speak once. Small repetitions are the daily win.";
+    }
+
+    function speak(rate = 0.88) {
+      if (!("speechSynthesis" in window)) {
+        els.voiceResult.textContent = "Speech playback is not available in this browser.";
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(sentences[currentIndex].german);
+      utterance.lang = "de-DE";
+      utterance.rate = rate;
+      utterance.pitch = 1;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function checkWriting() {
+      const target = sentences[currentIndex].german;
+      const attempt = els.writingInput.value;
+      const score = similarity(attempt, target);
+      const exact = normalize(attempt) === normalize(target);
+      state.writingScores.push({ date: todayKey, score });
+
+      if (score >= 90) {
+        markPracticeDone();
+      }
+
+      els.writingFeedback.className = `feedback ${exact ? "good" : "needs-work"}`;
+      els.writingFeedback.innerHTML = exact
+        ? `Excellent. Your spelling and word order match today’s sentence.`
+        : `Score: <b>${score}%</b>. Compare your attempt with the correction below.${buildDiff(attempt, target)}`;
+
+      saveState();
+      renderProgress();
+    }
+
+    function checkDictation() {
+      const target = sentences[currentIndex].german;
+      const attempt = els.dictationInput.value;
+      const score = similarity(attempt, target);
+      const exact = normalize(attempt) === normalize(target);
+      state.writingScores.push({ date: todayKey, score });
+
+      if (score >= 90) {
+        markPracticeDone();
+      }
+
+      els.dictationFeedback.className = `feedback ${exact ? "good" : "needs-work"}`;
+      els.dictationFeedback.innerHTML = exact
+        ? `Excellent listening. You wrote the sentence exactly as the AI read it.`
+        : `Listening score: <b>${score}%</b>. Correct sentence:${buildDiff(attempt, target)}`;
+
+      saveState();
+      renderProgress();
+    }
+
+    function buildDiff(attempt, target) {
+      const attemptWords = normalize(attempt).split(" ").filter(Boolean);
+      const targetWords = normalize(target).split(" ").filter(Boolean);
+      const tokens = targetWords.map((word, index) => {
+        const typed = attemptWords[index];
+        if (typed === word) return `<span class="token">${word}</span>`;
+        if (!typed) return `<span class="token missing">${word}</span>`;
+        return `<span class="token wrong">${typed}</span><span class="token missing">${word}</span>`;
+      });
+
+      return `<div class="diff">${tokens.join("")}</div>`;
+    }
+
+    function markPracticeDone() {
+      if (state.lastPracticeDate === todayKey) return;
+
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      state.streak = state.lastPracticeDate === yesterday ? state.streak + 1 : 1;
+      state.completed += 1;
+      state.lastPracticeDate = todayKey;
+    }
+
+    function toggleSavedWord(entry) {
+      const exists = state.savedWords.some((item) => item.word === entry.word);
+      state.savedWords = exists
+        ? state.savedWords.filter((item) => item.word !== entry.word)
+        : [...state.savedWords, entry];
+      saveState();
+      renderVocabulary(sentences[currentIndex]);
+      renderProgress();
+    }
+
+    function startRecognition() {
+      if (!SpeechRecognition) {
+        els.voiceResult.textContent = "Speech recognition is not available in this browser. You can still use playback and writing practice.";
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "de-DE";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      els.recordBtn.textContent = "Listening...";
+      els.recordBtn.classList.add("recording");
+      els.voiceResult.textContent = "Speak the full sentence clearly.";
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const score = similarity(transcript, sentences[currentIndex].german);
+        state.speakingScores.push({ date: todayKey, score });
+        if (score >= 80) markPracticeDone();
+        saveState();
+
+        els.voiceResult.innerHTML = `
+          Heard: <b>${transcript}</b><br>
+          Pronunciation match: <b>${score}%</b><br>
+          ${getPronunciationTip(score)}
+        `;
+        renderProgress();
+      };
+
+      recognition.onerror = () => {
+        els.voiceResult.textContent = "I could not hear the sentence clearly. Check microphone permission and try again.";
+      };
+
+      recognition.onend = () => {
+        els.recordBtn.textContent = "Start speaking";
+        els.recordBtn.classList.remove("recording");
+      };
+
+      recognition.start();
+    }
+
+    function getPronunciationTip(score) {
+      if (score >= 90) return "Clear pronunciation. Keep the same pace and confidence.";
+      if (score >= 75) return "Good match. Slow down slightly and keep the German vowel sounds crisp.";
+      if (score >= 55) return "Close. Listen again, then repeat in smaller chunks.";
+      return "Start with the first half of the sentence, then add the second half.";
+    }
+
+    els.speakBtn.addEventListener("click", () => speak());
+    els.playSlowBtn.addEventListener("click", () => speak(0.68));
+    els.dictationPlayBtn.addEventListener("click", () => speak(0.78));
+    els.checkDictationBtn.addEventListener("click", checkDictation);
+    els.checkWritingBtn.addEventListener("click", checkWriting);
+    els.fillHintBtn.addEventListener("click", () => {
+      const words = sentences[currentIndex].german.split(" ");
+      els.writingInput.value = words.map((word, index) => index % 2 === 0 ? word : "____").join(" ");
+      els.writingInput.focus();
+    });
+    els.recordBtn.addEventListener("click", startRecognition);
+    els.newSentenceBtn.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % sentences.length;
+      render();
+    });
+    els.tabs.forEach((tab) => {
+      tab.addEventListener("click", () => setActiveTab(tab.dataset.tab));
+    });
+    els.themeToggle.addEventListener("click", () => {
+      setTheme(document.body.classList.contains("dark") ? "light" : "dark");
+    });
+
+    setTheme(getPreferredTheme());
+    render();
+    setActiveTab("today");
+  </script>
+</body>
+</html>
